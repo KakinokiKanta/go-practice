@@ -18,7 +18,7 @@ func main () {
 	// ブログ記事の一覧を取得するためのエンドポイント
 	r.HandleFunc("/article/list", handlers.ArticleListHandler).Methods(http.MethodGet)
 	// 指定した記事ナンバーの投稿データを取得するためのエンドポイント
-	r.HandleFunc("/article/1", handlers.ArticleDetailHandler).Methods(http.MethodGet)
+	r.HandleFunc("/article/{id:[0-9]+}", handlers.ArticleDetailHandler).Methods(http.MethodGet)
 	// 記事にいいねをつけるためのエンドポイント
 	r.HandleFunc("/article/nice", handlers.PostNiceHandler).Methods(http.MethodPost)
 	// 記事にコメントを投稿するためのエンドポイント
