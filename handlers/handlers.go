@@ -8,9 +8,11 @@ import (
 
 // /helloのハンドラ
 func HelloHandler(w http.ResponseWriter, req *http.Request) {
-	// ハンドラの処理内容:
-	// 何がきても、"Hello, world!"の文字列を返す
-	io.WriteString(w, "Hello, world!\n")
+	if req.Method == http.MethodGet {
+		io.WriteString(w, "Hello, world!\n")
+	} else {
+		http.Error(w, "Invalid method", http.StatusMethodNotAllowed)
+	}
 }
 
 // TODO: ブログ記事の投稿をするためのハンドラ
