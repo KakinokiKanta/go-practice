@@ -15,7 +15,7 @@ func main () {
 	}
 
 	// 定義したhelloHandlerを使うように登録
-	http.HandleFunc("/", helloHandler)
+	http.HandleFunc("/hello", helloHandler)
 
 	// サーバ起動時のログ出力
 	log.Println("server start at port 8080")
