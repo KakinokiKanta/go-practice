@@ -12,17 +12,17 @@ func main () {
 	r := mux.NewRouter()
 
 	// 定義したhelloHandlerを使うように登録
-	r.HandleFunc("/hello", handlers.HelloHandler)
+	r.HandleFunc("/hello", handlers.HelloHandler).Methods(http.MethodGet)
 	// ブログ記事の投稿をするためのエンドポイント
-	r.HandleFunc("/article", handlers.PostArticleHandler)
+	r.HandleFunc("/article", handlers.PostArticleHandler).Methods(http.MethodPost)
 	// ブログ記事の一覧を取得するためのエンドポイント
-	r.HandleFunc("/article/list", handlers.ArticleListHandler)
+	r.HandleFunc("/article/list", handlers.ArticleListHandler).Methods(http.MethodGet)
 	// 指定した記事ナンバーの投稿データを取得するためのエンドポイント
-	r.HandleFunc("/article/1", handlers.ArticleDetailHandler)
+	r.HandleFunc("/article/1", handlers.ArticleDetailHandler).Methods(http.MethodGet)
 	// 記事にいいねをつけるためのエンドポイント
-	r.HandleFunc("/article/nice", handlers.PostNiceHandler)
+	r.HandleFunc("/article/nice", handlers.PostNiceHandler).Methods(http.MethodPost)
 	// 記事にコメントを投稿するためのエンドポイント
-	r.HandleFunc("/comment", handlers.PostCommentHandler)
+	r.HandleFunc("/comment", handlers.PostCommentHandler).Methods(http.MethodPost)
 
 	// サーバ起動時のログ出力
 	log.Println("server start at port 8080")
