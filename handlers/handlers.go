@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 
+	"github.com/KakinokiKanta/go-intermediate/models"
 	"github.com/gorilla/mux"
 )
 
@@ -14,12 +16,19 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "Hello, world!\n")
 }
 
-// TODO: ブログ記事の投稿をするためのハンドラ
+// POST: ブログ記事の投稿をするためのハンドラ
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Article...\n")
+	article := models.Article1
+	jsonData, err := json.Marshal(article)
+	if err != nil {
+		http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(jsonData)
 }
 
-// TODO: ブログ記事の一覧を取得するためのハンドラ
+// GET: ブログ記事の一覧を取得するためのハンドラ
 func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	queryMap := req.URL.Query()
 
@@ -37,27 +46,56 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		page = 1
 	}
 
-	resString := fmt.Sprintf("Article List (page %d)\n", page)
-	io.WriteString(w, resString)
+	articleList := []models.Article{models.Article1, models.Article2}
+	jsonData, err := json.Marshal(articleList)
+	if err != nil {
+		errMessage := fmt.Sprintf("fail to encode json (page %d)\n", page)
+		http.Error(w, errMessage, http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(jsonData)
 }
 
-// TODO: 指定した記事ナンバーの投稿データを取得するためのハンドラ
+// GET: 指定した記事ナンバーの投稿データを取得するためのハンドラ
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
-	resString := fmt.Sprintf("Article No.%d\n", articleID)
-	io.WriteString(w, resString)
+	
+	article := models.Article1
+	jsonData, err := json.Marshal(article)
+	if err != nil {
+		errMessage := fmt.Sprintf("fail to encode json (articleID %d)\n", articleID)
+		http.Error(w, errMessage, http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(jsonData)
 }
 
-// TODO: 記事にいいねをつけるためのハンドラ
+// POST: 記事にいいねをつけるためのハンドラ
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Nice...\n")
+	article := models.Article1
+	jsonData, err := json.Marshal(article)
+	if err != nil {
+		http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(jsonData)
 }
 
-// TODO: 記事にコメントを投稿するためのハンドラ
+// POST: 記事にコメントを投稿するためのハンドラ
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Comment...")
+	comment := models.Comment1
+	jsonData, err := json.Marshal(comment)
+	if err != nil {
+		http.Error(w, "fail to encode json", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(jsonData)
 }
