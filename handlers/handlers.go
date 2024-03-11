@@ -12,7 +12,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// POST: ブログ記事の投稿をするためのハンドラ
+/*
+	POST /article
+	ブログ記事の投稿をするためのハンドラ
+*/
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	// []byte型のreqBodybufferを用意
 	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
@@ -43,12 +46,20 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	w.Write(jsonData)
 }
 
-// GET: ブログ記事の一覧を取得するためのハンドラ
+/*
+	GET /article/list
+	ブログ記事の一覧を取得するためのハンドラ
+*/
 func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
+	// クエリパラメータを読み出し
 	queryMap := req.URL.Query()
 
+	// レスポンスで返す一覧のページ番号
 	var page int
 
+	// クエリパラメータに"page"があれば
+	// その値のページ番号を変数pageに格納
+	// なければ1をpageに格納
 	if p, ok := queryMap["page"]; ok && len(p) > 0 {
 		var err error
 		page, err = strconv.Atoi(p[0])
@@ -61,6 +72,7 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		page = 1
 	}
 
+	// モックデータを呼び出してjsonエンコード
 	articleList := []models.Article{models.Article1, models.Article2}
 	jsonData, err := json.Marshal(articleList)
 	if err != nil {
@@ -69,17 +81,23 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// jsonをレスポンスに格納
 	w.Write(jsonData)
 }
 
-// GET: 指定した記事ナンバーの投稿データを取得するためのハンドラ
+/*
+	GET /article/{id}
+	指定した記事ナンバーの投稿データを取得するためのハンドラ
+*/
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
+	// muxを用いてリクエストからidを抽出
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
 	
+	// モックデータを呼び出してjsonエンコード
 	article := models.Article1
 	jsonData, err := json.Marshal(article)
 	if err != nil {
@@ -88,11 +106,16 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// jsonをレスポンスに格納
 	w.Write(jsonData)
 }
 
-// POST: 記事にいいねをつけるためのハンドラ
+/*
+	POST /article/nice
+	記事にいいねをつけるためのハンドラ
+*/
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
+	// モックデータを呼び出してjsonエンコード
 	article := models.Article1
 	jsonData, err := json.Marshal(article)
 	if err != nil {
@@ -100,11 +123,16 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// jsonをレスポンスに格納
 	w.Write(jsonData)
 }
 
-// POST: 記事にコメントを投稿するためのハンドラ
+/*
+	POST /comment
+	記事にコメントを投稿するためのハンドラ
+*/
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
+	// モックデータを呼び出してjsonエンコード
 	comment := models.Comment1
 	jsonData, err := json.Marshal(comment)
 	if err != nil {
@@ -112,5 +140,6 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// jsonをレスポンスに格納
 	w.Write(jsonData)
 }
