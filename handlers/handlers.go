@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -12,6 +14,24 @@ import (
 
 // POST: ブログ記事の投稿をするためのハンドラ
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
+	// []byte型のreqBodybufferを用意
+	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	if err != nil {
+		http.Error(w, "cannot get content length\n", http.StatusBadRequest)
+		return
+	}
+	reqBodybuffer := make([]byte, length)
+
+	// Readメソッドでリクエストボディを読み出し
+	if _, err := req.Body.Read(reqBodybuffer); !errors.Is(err, io.EOF) {
+		http.Error(w, "fail to get request body\n", http.StatusBadRequest)
+		return
+	}
+
+	// ボディをCloseする
+	defer req.Body.Close()
+
+	// モックデータを呼び出してjsonエンコード
 	article := models.Article1
 	jsonData, err := json.Marshal(article)
 	if err != nil {
@@ -19,6 +39,7 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// jsonをレスポンスに格納
 	w.Write(jsonData)
 }
 
