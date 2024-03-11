@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -19,6 +19,7 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		return
 	}
 
 	// デコードした構造体をjsonエンコードしてレスポンスとする
@@ -53,17 +54,12 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		page = 1
 	}
 
+	// TODO: 「変数pageが使われていない」というコンパイルエラーを回避するための応急処置
+	log.Println(page)
+
 	// モックデータを呼び出してjsonエンコード
 	articleList := []models.Article{models.Article1, models.Article2}
-	jsonData, err := json.Marshal(articleList)
-	if err != nil {
-		errMessage := fmt.Sprintf("fail to encode json (page %d)\n", page)
-		http.Error(w, errMessage, http.StatusInternalServerError)
-		return
-	}
-
-	// jsonをレスポンスに格納
-	w.Write(jsonData)
+	json.NewEncoder(w).Encode(articleList)
 }
 
 
@@ -78,18 +74,13 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
+
+	// TODO: 「変数articleIDが使われていない」というコンパイルエラーを回避するための応急処置
+	log.Println(articleID)
 	
 	// モックデータを呼び出してjsonエンコード
 	article := models.Article1
-	jsonData, err := json.Marshal(article)
-	if err != nil {
-		errMessage := fmt.Sprintf("fail to encode json (articleID %d)\n", articleID)
-		http.Error(w, errMessage, http.StatusInternalServerError)
-		return
-	}
-
-	// jsonをレスポンスに格納
-	w.Write(jsonData)
+	json.NewEncoder(w).Encode(article)
 }
 
 
@@ -98,16 +89,16 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	記事にいいねをつけるためのハンドラ
 */
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
-	// モックデータを呼び出してjsonエンコード
-	article := models.Article1
-	jsonData, err := json.Marshal(article)
-	if err != nil {
-		http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
+	// jsonデータを構造体にデコード
+	var reqArticle models.Article
+	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 		return
 	}
 
-	// jsonをレスポンスに格納
-	w.Write(jsonData)
+	// デコードした構造体をjsonエンコードしてレスポンスとする
+	article := reqArticle
+	json.NewEncoder(w).Encode(article)
 }
 
 
@@ -116,14 +107,14 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	記事にコメントを投稿するためのハンドラ
 */
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
-	// モックデータを呼び出してjsonエンコード
-	comment := models.Comment1
-	jsonData, err := json.Marshal(comment)
-	if err != nil {
-		http.Error(w, "fail to encode json", http.StatusInternalServerError)
+	// jsonデータを構造体にデコード
+	var reqComment models.Comment
+	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 		return
 	}
 
-	// jsonをレスポンスに格納
-	w.Write(jsonData)
+	// デコードした構造体をjsonエンコードしてレスポンスとする
+	comment := reqComment
+	json.NewEncoder(w).Encode(comment)
 }
