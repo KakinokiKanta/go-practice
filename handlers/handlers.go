@@ -3,18 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/KakinokiKanta/go-intermediate/models"
 	"github.com/gorilla/mux"
 )
-
-// /helloのハンドラ
-func HelloHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Hello, world!\n")
-}
 
 // POST: ブログ記事の投稿をするためのハンドラ
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
