@@ -11,8 +11,6 @@ import (
 func main () {
 	r := mux.NewRouter()
 
-	// 定義したhelloHandlerを使うように登録
-	r.HandleFunc("/hello", handlers.HelloHandler).Methods(http.MethodGet)
 	// ブログ記事の投稿をするためのエンドポイント
 	r.HandleFunc("/article", handlers.PostArticleHandler).Methods(http.MethodPost)
 	// ブログ記事の一覧を取得するためのエンドポイント
