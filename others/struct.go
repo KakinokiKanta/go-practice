@@ -23,7 +23,7 @@ type Article struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func main () {
+func mysql () {
 	comment1 := Comment{
 		CommentID: 1,
 		ArticleID: 1,
