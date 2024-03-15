@@ -2,26 +2,54 @@ package main
 
 import (
 	"database/sql"
+	"dbsample/models"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
+	// MySQLユーザやパスワード、データベースを、MySQLコンテナとのコネクション確立に必要な形式にする
 	dbUser := "docker"
 	dbPassword := "docker"
 	dbDatabase := "sampledb"
-	dbConn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+	dbConn := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
 
+	// dbConn変数を用いて、MySQLコンテナとの接続を確立する
 	db, err := sql.Open("mysql", dbConn)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
+	// sql文を定義
+	const sqlStr = `
+		select title, contents, username, nice from articles;
+	`
+	// sql.DB型のメソッドQueryを用いてsql文を実行、返り値をrows変数に格納
+	rows, err := db.Query(sqlStr)
+	if err != nil {
 		fmt.Println(err)
-	} else {
-		fmt.Println("connect to DB")
+		return
 	}
+	defer rows.Close()
+
+	// make関数を用いて中身を0で初期化したmodels.Article型のスライスを用意
+	articleArray := make([]models.Article, 0)
+	// rowsに存在するレコードそれぞれに対して、繰り返し処理を実行
+	for rows.Next() {
+		// article変数の各フィールドに取得レコードのデータを入れる
+		// (SQLクエリのselect句から、タイトル・本文・ユーザ名・いいね数が返ってくることはわかっている)
+		var article models.Article
+		err := rows.Scan(&article.Title, &article.Contents, &article.UserName, &article.NiceNum)
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			// 読み出し結果を格納したarticle変数を、articleArrayスライスに追加
+			articleArray = append(articleArray, article)
+		}
+	}
+
+	fmt.Printf("%+v\n", articleArray)
 }
