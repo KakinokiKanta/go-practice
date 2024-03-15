@@ -23,38 +23,30 @@ func main() {
 	defer db.Close()
 
 	// sql文を定義
+	articleID := 1
 	const sqlStr = `
-		select * from articles;
+		select * from articles where article_id=?;
 	`
-	// sql.DB型のメソッドQueryを用いてsql文を実行、返り値をrows変数に格納
-	rows, err := db.Query(sqlStr)
+	// sql.DB型のメソッドQueryRowを用いてsql文を実行、返り値をrow変数に格納
+	row := db.QueryRow(sqlStr, articleID)
+	if err := row.Err(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// article変数の各フィールドに取得レコードのデータを入れる
+	// (SQLクエリのselect句から、タイトル・本文・ユーザ名・いいね数が返ってくることはわかっている)
+	var article models.Article
+	var createdTime sql.NullTime
+	// rowsに存在するレコードそれぞれに対して、繰り返し処理を実行
+	err = row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer rows.Close()
-
-	// make関数を用いて中身を0で初期化したmodels.Article型のスライスを用意
-	articleArray := make([]models.Article, 0)
-	// rowsに存在するレコードそれぞれに対して、繰り返し処理を実行
-	for rows.Next() {
-		// article変数の各フィールドに取得レコードのデータを入れる
-		// (SQLクエリのselect句から、タイトル・本文・ユーザ名・いいね数が返ってくることはわかっている)
-		var article models.Article
-		var createdTime sql.NullTime
-		err := rows.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
-
-		if createdTime.Valid {
-			article.CreatedAt = createdTime.Time
-		}
-
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			// 読み出し結果を格納したarticle変数を、articleArrayスライスに追加
-			articleArray = append(articleArray, article)
-		}
+	if createdTime.Valid {
+		article.CreatedAt = createdTime.Time
 	}
 
-	fmt.Printf("%+v\n", articleArray)
+	fmt.Printf("%+v\n", article)
 }
