@@ -1,0 +1,44 @@
+package main
+
+import (
+	"database/sql"
+	"dbsample/models"
+	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	// MySQLユーザやパスワード、データベースを、MySQLコンテナとのコネクション確立に必要な形式にする
+	dbUser := "docker"
+	dbPassword := "docker"
+	dbDatabase := "sampledb"
+	dbConn := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+
+	// dbConn変数を用いて、MySQLコンテナとの接続を確立する
+	db, err := sql.Open("mysql", dbConn)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+
+	// sql文を定義
+	article := models.Article{
+		Title: "insert test",
+		Contents: "Can I insert data correctly?",
+		UserName: "saki",
+	}
+	const sqlStr = `
+		insert into articles (title, contents, username, nice, created_at) values (?, ?, ?, 0, now());
+	`
+	// sql.DB型のメソッドExecを用いてsql文を実行
+	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// 結果を確認
+	fmt.Println(result.LastInsertId())
+	fmt.Println(result.RowsAffected())
+}
