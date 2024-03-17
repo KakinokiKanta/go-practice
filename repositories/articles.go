@@ -25,11 +25,10 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	}
 
 	// 返り値用のmodels.Article型を宣言
-	newArticle := models.Article {
-		Title: article.Title,
-		Contents: article.Contents,
-		UserName: article.UserName,
-	}
+	var newArticle models.Article
+	newArticle.Title = article.Title
+	newArticle.Contents = article.Contents
+	newArticle.UserName = article.UserName
 
 	// 投稿した記事に割り振られたIDを取得
 	id, _ := result.LastInsertId()
@@ -53,6 +52,7 @@ func SelectedArticleList (db *sql.DB, page int) ([]models.Article, error) {
 		fmt.Println(err)
 		return nil, err
 	}
+	defer rows.Close()
 
 	// models.Articleのスライスを用意
 	articleArray := make([]models.Article, 0)
@@ -69,8 +69,10 @@ func SelectedArticleList (db *sql.DB, page int) ([]models.Article, error) {
 	return articleArray, nil
 }
 
-// いいねの数をupdateする関数
-// あえて2つのクエリを送る実装にして、トランザクション処理の練習としています
+/*
+	いいねの数をupdateする関数
+	あえて2つのクエリを送る実装にして、トランザクション処理の練習としています
+*/
 func UpdageNiceNum(db *sql.DB, articleID int) error {
 	// クエリの定義
 	const sqlGetNice = `
