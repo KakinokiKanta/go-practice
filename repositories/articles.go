@@ -70,6 +70,41 @@ func SelectedArticleList (db *sql.DB, page int) ([]models.Article, error) {
 }
 
 /*
+	投稿IDを指定して、記事データを取得する関数
+*/
+func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
+	// クエリの定義
+	const sqlStr = `
+		select * from articles where article_id = ?;
+	`
+
+	// QueryRowメソッドでクエリを実行し、結果を変数rowに格納
+	row := db.QueryRow(sqlStr, articleID)
+	if err := row.Err(); err != nil {
+		fmt.Println(err)
+		return models.Article{}, err
+	}
+
+	// 返り値用の変数を用意
+	var article models.Article
+	// created_atフィールドがnullの場合があるため必要
+	var createdAt sql.NullTime
+
+	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdAt)
+	if err != nil {
+		fmt.Println(err)
+		return models.Article{}, err
+	}
+
+	// created_atフィールドがnullでないならば
+	if createdAt.Valid {
+		article.CreatedAt = createdAt.Time
+	}
+
+	return article, nil
+}
+
+/*
 	いいねの数をupdateする関数
 	あえて2つのクエリを送る実装にして、トランザクション処理の練習としています
 */
