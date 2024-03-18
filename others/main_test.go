@@ -5,26 +5,30 @@ import (
 	"testing"
 )
 
-func setup() {
-	fmt.Println("setup")
-}
+// func setup() {
+// 	fmt.Println("setup")
+// }
 
-func teardown() {
-	fmt.Println("teardown")
-}
+// func teardown() {
+// 	fmt.Println("teardown")
+// }
 
-func TestMain(m *testing.M) {
-	setup()
+// func TestMain(m *testing.M) {
+// 	setup()
 
-	m.Run()
+// 	m.Run()
 
-	teardown()
-}
+// 	teardown()
+// }
 
 func TestA(t *testing.T) {
+	t.Cleanup(func() {
+		fmt.Println("cleanup")
+	})
+
 	fmt.Println("testA")
 }
 
-func TestB(t *testing.T) {
-	fmt.Println("testB")
-}
+// func TestB(t *testing.T) {
+// 	fmt.Println("testB")
+// }
