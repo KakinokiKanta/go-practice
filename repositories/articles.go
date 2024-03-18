@@ -40,10 +40,10 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 /*
 	変数pageで指定されたページに表示する投稿一覧をデータベースから取得する関数
 */
-func SelectedArticleList (db *sql.DB, page int) ([]models.Article, error) {
+func SelectArticleList (db *sql.DB, page int) ([]models.Article, error) {
 	// クエリの定義
 	const sqlStr = `
-		selected article_id, title, contents, username, nice from articles limit ? offset ?;
+		select article_id, title, contents, username, nice from articles limit ? offset ?;
 	`
 
 	// sql.DB型のQueryメソッドを用いてクエリを実行し、得られたデータをrowsに格納
