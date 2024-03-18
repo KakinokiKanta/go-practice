@@ -5,6 +5,7 @@ import (
 
 	"github.com/KakinokiKanta/go-intermediate/models"
 	"github.com/KakinokiKanta/go-intermediate/repositories"
+	"github.com/KakinokiKanta/go-intermediate/repositories/testdata"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -36,7 +37,7 @@ func TestInsertArticle(t *testing.T) {
 // SelectArticleList関数のテスト
 func TestSelectArticleList(t *testing.T) {
 	// テスト対象の関数を実行
-	expectedNum := 2
+	expectedNum := len(testdata.ArticleTestData)
 	got, err := repositories.SelectArticleList(testDB, 1)
 	if err != nil {
 		t.Fatal(err)
@@ -57,24 +58,12 @@ func TestSelectArticleDetail(t *testing.T) {
 		{
 			// 記事IDが1番の記事内容
 			testTitle: "subtest1",
-			expected : models.Article{
-				ID: 1,
-				Title: "firstPost",
-				Contents: "This is my first blog",
-				UserName: "saki",
-				NiceNum: 2,
-			},
+			expected : testdata.ArticleTestData[0],
 		},
 		{
 			// 記事IDが2番の記事内容
 			testTitle: "subtest2",
-			expected : models.Article{
-				ID: 2,
-				Title: "2nd",
-				Contents: "Second blog post",
-				UserName: "saki",
-				NiceNum: 4,
-			},
+			expected : testdata.ArticleTestData[1],
 		},
 	}
 
