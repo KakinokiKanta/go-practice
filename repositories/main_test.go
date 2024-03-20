@@ -9,13 +9,14 @@ import (
 )
 
 // テスト全体で共有するsql.DB型
-var testDB * sql.DB
+var testDB *sql.DB
+
 // データベース接続のための情報を定義
 var (
-	dbUser = "docker"
+	dbUser     = "docker"
 	dbPassword = "docker"
 	dbDatabase = "sampledb"
-	dbConn = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+	dbConn     = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
 )
 
 // 前処理
@@ -75,7 +76,7 @@ func teardown() {
 	testDB.Close()
 }
 
-func TestMain (m *testing.M) {
+func TestMain(m *testing.M) {
 	err := setup() // 前処理
 	if err != nil {
 		os.Exit(1)
