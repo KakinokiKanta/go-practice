@@ -46,10 +46,10 @@ func connectDB() error {
 	return nil
 }
 
-// データベースにデータを入れる前処理
-func setupTestData() error {
+// データベース内のテスト用データを消す後処理
+func cleanupDB() error {
 	// os/execパッケージのexec.Command関数を用いて、実行したいコマンドの情報を持つexec.Cmd型の変数を用意
-	cmd := exec.Command("mysql", "-h", "localhost", "-u", "docker", "sampledb", "--password=docker", "-e", "source ./testdata/setupDB.sql")
+	cmd := exec.Command("mysql", "-h", "localhost", "-u", "docker", "sampledb", "--password=docker", "-e", "source ./testdata/cleanupDB.sql")
 	// exec.Cmd型のRunメソッドを読んで、コマンドを実行
 	err := cmd.Run()
 	if err != nil {
@@ -58,10 +58,10 @@ func setupTestData() error {
 	return nil
 }
 
-// データベース内のテスト用データを消す後処理
-func cleanupDB() error {
+// データベースにデータを入れる前処理
+func setupTestData() error {
 	// os/execパッケージのexec.Command関数を用いて、実行したいコマンドの情報を持つexec.Cmd型の変数を用意
-	cmd := exec.Command("mysql", "-h", "localhost", "-u", "docker", "sampledb", "--password=docker", "-e", "source ./testdata/cleanupDB.sql")
+	cmd := exec.Command("mysql", "-h", "localhost", "-u", "docker", "sampledb", "--password=docker", "-e", "source ./testdata/setupDB.sql")
 	// exec.Cmd型のRunメソッドを読んで、コマンドを実行
 	err := cmd.Run()
 	if err != nil {
