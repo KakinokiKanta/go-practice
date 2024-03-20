@@ -40,6 +40,7 @@ func connectDB() error {
 	var err error
 	testDB, err = sql.Open("mysql", dbConn)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -53,6 +54,7 @@ func cleanupDB() error {
 	// exec.Cmd型のRunメソッドを読んで、コマンドを実行
 	err := cmd.Run()
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -65,6 +67,7 @@ func setupTestData() error {
 	// exec.Cmd型のRunメソッドを読んで、コマンドを実行
 	err := cmd.Run()
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil
