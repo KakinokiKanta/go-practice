@@ -7,7 +7,11 @@ import (
 
 // 指定IDの記事情報を返却
 func GetArticleService(articleID int) (models.Article, error) {
-	// TODO: sql.DB型を手に入れて、変数dbに代入する
+	db, err := connectDB()
+	if err != nil {
+		return models.Article{}, err
+	}
+	db.Close()
 
 	// repositories層の関数SelectArticleDetailで記事の詳細を取得
 	article, err := repositories.SelectArticleDetail(db, articleID)
