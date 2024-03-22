@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -23,8 +22,12 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// デコードした構造体をjsonエンコードしてレスポンスとする
-	article := reqArticle
+	article, err := services.PostArticleService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail to internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -54,11 +57,12 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		page = 1
 	}
 
-	// TODO: 「変数pageが使われていない」というコンパイルエラーを回避するための応急処置
-	log.Println(page)
+	articleList, err := services.GetArticleListService(page)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 
-	// モックデータを呼び出してjsonエンコード
-	articleList := []models.Article{models.Article1, models.Article2}
 	json.NewEncoder(w).Encode(articleList)
 }
 
@@ -77,6 +81,7 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	article, err := services.GetArticleService(articleID)
 	if err != nil {
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
 	}
 
 	json.NewEncoder(w).Encode(article)
@@ -94,8 +99,12 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// デコードした構造体をjsonエンコードしてレスポンスとする
-	article := reqArticle
+	article, err := services.PostNiceService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -111,7 +120,11 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// デコードした構造体をjsonエンコードしてレスポンスとする
-	comment := reqComment
+	comment, err := services.PostCommentService(reqComment)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(comment)
 }
