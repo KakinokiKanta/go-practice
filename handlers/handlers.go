@@ -7,12 +7,13 @@ import (
 	"strconv"
 
 	"github.com/KakinokiKanta/go-intermediate/models"
+	"github.com/KakinokiKanta/go-intermediate/services"
 	"github.com/gorilla/mux"
 )
 
 /*
-	POST /article
-	ブログ記事の投稿をするためのハンドラ
+POST /article
+ブログ記事の投稿をするためのハンドラ
 */
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	// jsonデータを構造体にデコード
@@ -27,10 +28,9 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(article)
 }
 
-
 /*
-	GET /article/list
-	ブログ記事の一覧を取得するためのハンドラ
+GET /article/list
+ブログ記事の一覧を取得するためのハンドラ
 */
 func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	// クエリパラメータを読み出し
@@ -62,10 +62,9 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(articleList)
 }
 
-
 /*
-	GET /article/{id}
-	指定した記事ナンバーの投稿データを取得するためのハンドラ
+GET /article/{id}
+指定した記事ナンバーの投稿データを取得するためのハンドラ
 */
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	// muxを用いてリクエストからidを抽出
@@ -75,18 +74,17 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// TODO: 「変数articleIDが使われていない」というコンパイルエラーを回避するための応急処置
-	log.Println(articleID)
-	
-	// モックデータを呼び出してjsonエンコード
-	article := models.Article1
+	article, err := services.GetArticleService(articleID)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
-
 /*
-	POST /article/nice
-	記事にいいねをつけるためのハンドラ
+POST /article/nice
+記事にいいねをつけるためのハンドラ
 */
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	// jsonデータを構造体にデコード
@@ -101,10 +99,9 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(article)
 }
 
-
 /*
-	POST /comment
-	記事にコメントを投稿するためのハンドラ
+POST /comment
+記事にコメントを投稿するためのハンドラ
 */
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 	// jsonデータを構造体にデコード
