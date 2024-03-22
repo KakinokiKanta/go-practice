@@ -5,13 +5,29 @@ import (
 	"github.com/KakinokiKanta/go-intermediate/repositories"
 )
 
+// 記事データをデータベース内に挿入し、その値を返す
+func PostArticleService(article models.Article) (models.Article, error) {
+	db, err := connectDB()
+	if err != nil {
+		return models.Article{}, err
+	}
+	defer db.Close()
+
+	newArticle, err := repositories.InsertArticle(db, article)
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	return newArticle, nil
+}
+
 // 指定IDの記事情報を返却
 func GetArticleService(articleID int) (models.Article, error) {
 	db, err := connectDB()
 	if err != nil {
 		return models.Article{}, err
 	}
-	db.Close()
+	defer db.Close()
 
 	// repositories層の関数SelectArticleDetailで記事の詳細を取得
 	article, err := repositories.SelectArticleDetail(db, articleID)
