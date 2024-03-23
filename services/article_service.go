@@ -71,7 +71,7 @@ func PostNiceService(article models.Article) (models.Article, error) {
 	}
 	defer db.Close()
 
-	err = repositories.UpdageNiceNum(db, article.ID)
+	nicenum, err := repositories.UpdageNiceNum(db, article.ID)
 	if err != nil {
 		return models.Article{}, err
 	}
@@ -81,7 +81,7 @@ func PostNiceService(article models.Article) (models.Article, error) {
 		Title:     article.Title,
 		Contents:  article.Contents,
 		UserName:  article.UserName,
-		NiceNum:   article.NiceNum,
+		NiceNum:   nicenum,
 		CreatedAt: article.CreatedAt,
 	}, nil
 }

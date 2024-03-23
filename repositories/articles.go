@@ -10,7 +10,7 @@ import (
 const articleNumPerPage = 5
 
 /*
-	新規投稿をデータベースにinsertする関数
+新規投稿をデータベースにinsertする関数
 */
 func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	// クエリの定義
@@ -38,16 +38,16 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 }
 
 /*
-	変数pageで指定されたページに表示する投稿一覧をデータベースから取得する関数
+変数pageで指定されたページに表示する投稿一覧をデータベースから取得する関数
 */
-func SelectArticleList (db *sql.DB, page int) ([]models.Article, error) {
+func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	// クエリの定義
 	const sqlStr = `
 		select article_id, title, contents, username, nice from articles limit ? offset ?;
 	`
 
 	// sql.DB型のQueryメソッドを用いてクエリを実行し、得られたデータをrowsに格納
-	rows, err := db.Query(sqlStr, articleNumPerPage, (page - 1) * articleNumPerPage)
+	rows, err := db.Query(sqlStr, articleNumPerPage, (page-1)*articleNumPerPage)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -70,7 +70,7 @@ func SelectArticleList (db *sql.DB, page int) ([]models.Article, error) {
 }
 
 /*
-	投稿IDを指定して、記事データを取得する関数
+投稿IDを指定して、記事データを取得する関数
 */
 func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 	// クエリの定義
@@ -105,10 +105,10 @@ func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 }
 
 /*
-	いいねの数をupdateする関数
-	あえて2つのクエリを送る実装にして、トランザクション処理の練習としています
+いいねの数をupdateする関数
+あえて2つのクエリを送る実装にして、トランザクション処理の練習としています
 */
-func UpdageNiceNum(db *sql.DB, articleID int) error {
+func UpdageNiceNum(db *sql.DB, articleID int) (int, error) {
 	// クエリの定義
 	const sqlGetNice = `
 		select nice from articles where article_id = ?;
@@ -118,10 +118,10 @@ func UpdageNiceNum(db *sql.DB, articleID int) error {
 	`
 
 	// トランザクション処理の開始
-	tx, err:= db.Begin()
+	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return 0, err
 	}
 
 	// 1レコードだけ抽出するQueryRowメソッドで、指定した記事IDのいいね数を取得
@@ -129,7 +129,7 @@ func UpdageNiceNum(db *sql.DB, articleID int) error {
 	if err := row.Err(); err != nil {
 		fmt.Println(err)
 		tx.Rollback()
-		return err
+		return 0, err
 	}
 
 	// sql.Row型のメソッドScanでrowからいいね数を抽出
@@ -138,22 +138,22 @@ func UpdageNiceNum(db *sql.DB, articleID int) error {
 	if err != nil {
 		fmt.Println(err)
 		tx.Rollback()
-		return err
+		return 0, err
 	}
 
 	// Execメソッドでupdateを実行
-	_, err = tx.Exec(sqlUpdateNice, nicenum + 1, articleID)
+	_, err = tx.Exec(sqlUpdateNice, nicenum+1, articleID)
 	if err != nil {
 		fmt.Println(err)
 		tx.Rollback()
-		return err
+		return 0, err
 	}
 
 	// Commitして、これまでの一連の処理を確定
 	if err := tx.Commit(); err != nil {
 		fmt.Println(err)
-		return err
+		return 0, err
 	}
 
-	return nil
+	return nicenum + 1, nil
 }

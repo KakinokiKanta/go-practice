@@ -12,7 +12,7 @@ import (
 // InsertArticle関数のテスト
 func TestInsertArticle(t *testing.T) {
 	article := models.Article{
-		Title: "insertTest",
+		Title:    "insertTest",
 		Contents: "testest",
 		UserName: "saki",
 	}
@@ -52,18 +52,18 @@ func TestSelectArticleList(t *testing.T) {
 // SelectArticleDetail関数のテスト
 func TestSelectArticleDetail(t *testing.T) {
 	tests := []struct {
-		testTitle string // テストのタイトル
-		expected models.Article // テストで期待する値
+		testTitle string         // テストのタイトル
+		expected  models.Article // テストで期待する値
 	}{
 		{
 			// 記事IDが1番の記事内容
 			testTitle: "subtest1",
-			expected : testdata.ArticleTestData[0],
+			expected:  testdata.ArticleTestData[0],
 		},
 		{
 			// 記事IDが2番の記事内容
 			testTitle: "subtest2",
-			expected : testdata.ArticleTestData[1],
+			expected:  testdata.ArticleTestData[1],
 		},
 	}
 
@@ -107,17 +107,12 @@ func TestUpdateNiceNum(t *testing.T) {
 		t.Fatal("fail to get before data")
 	}
 
-	err = repositories.UpdageNiceNum(testDB, articleID)
+	nicenum, err := repositories.UpdageNiceNum(testDB, articleID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	after, err := repositories.SelectArticleDetail(testDB, articleID)
-	if err != nil {
-		t.Fatal("fail to get after data")
-	}
-
-	if before.NiceNum + 1 != after.NiceNum {
+	if before.NiceNum+1 != nicenum {
 		t.Errorf("fail to update nice num")
 	}
 }
