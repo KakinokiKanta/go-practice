@@ -10,7 +10,7 @@ func PostCommentService(comment models.Comment) (models.Comment, error) {
 	if err != nil {
 		return models.Comment{}, err
 	}
-	db.Close()
+	defer db.Close()
 
 	newComment, err := repositories.InsertComment(db, comment)
 	if err != nil {
