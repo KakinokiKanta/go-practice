@@ -9,6 +9,7 @@ import (
 
 	"github.com/KakinokiKanta/go-intermediate/controllers"
 	"github.com/KakinokiKanta/go-intermediate/services"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -30,6 +31,7 @@ func main() {
 
 	ser := services.NewMyAppService(db)
 	con := controllers.NewMyAppController(ser)
+
 	r := mux.NewRouter()
 
 	// ブログ記事の投稿をするためのエンドポイント
