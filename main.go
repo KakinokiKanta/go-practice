@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func main () {
+func main() {
 	r := mux.NewRouter()
 
 	// ブログ記事の投稿をするためのエンドポイント
