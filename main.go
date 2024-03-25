@@ -8,9 +8,9 @@ import (
 	"os"
 
 	"github.com/KakinokiKanta/go-intermediate/controllers"
+	"github.com/KakinokiKanta/go-intermediate/routers"
 	"github.com/KakinokiKanta/go-intermediate/services"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -32,18 +32,7 @@ func main() {
 	ser := services.NewMyAppService(db)
 	con := controllers.NewMyAppController(ser)
 
-	r := mux.NewRouter()
-
-	// ブログ記事の投稿をするためのエンドポイント
-	r.HandleFunc("/article", con.PostArticleHandler).Methods(http.MethodPost)
-	// ブログ記事の一覧を取得するためのエンドポイント
-	r.HandleFunc("/article/list", con.ArticleListHandler).Methods(http.MethodGet)
-	// 指定した記事ナンバーの投稿データを取得するためのエンドポイント
-	r.HandleFunc("/article/{id:[0-9]+}", con.ArticleDetailHandler).Methods(http.MethodGet)
-	// 記事にいいねをつけるためのエンドポイント
-	r.HandleFunc("/article/nice", con.PostNiceHandler).Methods(http.MethodPost)
-	// 記事にコメントを投稿するためのエンドポイント
-	r.HandleFunc("/comment", con.PostCommentHandler).Methods(http.MethodPost)
+	r := routers.NewRouter(con)
 
 	// サーバ起動時のログ出力
 	log.Println("server start at port 8080")
