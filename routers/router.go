@@ -1,13 +1,19 @@
 package routers
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/KakinokiKanta/go-intermediate/controllers"
+	"github.com/KakinokiKanta/go-intermediate/services"
 	"github.com/gorilla/mux"
 )
 
-func NewRouter(aCon *controllers.ArticleController, cCon *controllers.CommentController) *mux.Router {
+func NewRouter(db *sql.DB) *mux.Router {
+	ser := services.NewMyAppService(db)
+	aCon := controllers.NewArticleController(ser)
+	cCon := controllers.NewCommentController(ser)
+
 	r := mux.NewRouter()
 
 	// ブログ記事の投稿をするためのエンドポイント

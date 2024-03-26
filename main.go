@@ -7,9 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/KakinokiKanta/go-intermediate/controllers"
 	"github.com/KakinokiKanta/go-intermediate/routers"
-	"github.com/KakinokiKanta/go-intermediate/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
@@ -29,11 +27,7 @@ func main() {
 		return
 	}
 
-	ser := services.NewMyAppService(db)
-	aCon := controllers.NewArticleController(ser)
-	cCon := controllers.NewCommentController(ser)
-
-	r := routers.NewRouter(aCon, cCon)
+	r := routers.NewRouter(db)
 
 	// サーバ起動時のログ出力
 	log.Println("server start at port 8080")
