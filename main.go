@@ -30,9 +30,10 @@ func main() {
 	}
 
 	ser := services.NewMyAppService(db)
-	con := controllers.NewMyAppController(ser)
+	aCon := controllers.NewArticleController(ser)
+	cCon := controllers.NewCommentController(ser)
 
-	r := routers.NewRouter(con)
+	r := routers.NewRouter(aCon, cCon)
 
 	// サーバ起動時のログ出力
 	log.Println("server start at port 8080")
