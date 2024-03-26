@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/KakinokiKanta/go-intermediate/controllers/services"
 	"github.com/KakinokiKanta/go-intermediate/models"
-	"github.com/KakinokiKanta/go-intermediate/services"
 	"github.com/gorilla/mux"
 )
 
 // MyAppController構造体
 type MyAppController struct {
-	service *services.MyAppService
+	service services.MyAppServicer
 }
 
 // MyAppControllerのコンストラクタ
-func NewMyAppController(s *services.MyAppService) *MyAppController {
+func NewMyAppController(s services.MyAppServicer) *MyAppController {
 	return &MyAppController{service: s}
 }
 
