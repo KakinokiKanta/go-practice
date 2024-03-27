@@ -1,6 +1,9 @@
 package services
 
 import (
+	"database/sql"
+	"errors"
+
 	"github.com/KakinokiKanta/go-intermediate/apperrors"
 	"github.com/KakinokiKanta/go-intermediate/models"
 	"github.com/KakinokiKanta/go-intermediate/repositories"
@@ -32,12 +35,18 @@ func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) 
 	// repositories層の関数SelectArticleDetailで記事の詳細を取得
 	article, err := repositories.SelectArticleDetail(s.db, articleID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = apperrors.NAData.Wrap(err, "no data")
+			return models.Article{}, err
+		}
+		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
 		return models.Article{}, err
 	}
 
 	// repositories層の関数SelectCommentListでコメント一覧を取得
 	commentList, err := repositories.SelectedCommentList(s.db, articleID)
 	if err != nil {
+		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
 		return models.Article{}, err
 	}
 
