@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/KakinokiKanta/go-intermediate/apperrors"
 	"github.com/KakinokiKanta/go-intermediate/models"
 	"github.com/KakinokiKanta/go-intermediate/repositories"
 )
@@ -9,6 +10,7 @@ import (
 func (s *MyAppService) PostArticleService(article models.Article) (models.Article, error) {
 	newArticle, err := repositories.InsertArticle(s.db, article)
 	if err != nil {
+		err = apperrors.InsertDataFailed.Wrap(err, "fail to record data")
 		return models.Article{}, err
 	}
 
