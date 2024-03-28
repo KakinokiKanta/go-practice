@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/KakinokiKanta/go-intermediate/apperrors"
 	"github.com/KakinokiKanta/go-intermediate/controllers/services"
 	"github.com/KakinokiKanta/go-intermediate/models"
 	"github.com/gorilla/mux"
@@ -28,8 +29,8 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 	// jsonデータを構造体にデコード
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
-		return
 	}
 
 	article, err := c.service.PostArticleService(reqArticle)
@@ -60,6 +61,7 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 		page, err = strconv.Atoi(p[0])
 
 		if err != nil {
+			err = apperrors.BadParam.Wrap(err, "queryparam must be number")
 			http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 			return
 		}
@@ -84,6 +86,7 @@ func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *htt
 	// muxを用いてリクエストからidを抽出
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
+		err = apperrors.BadParam.Wrap(err, "pathparam must be number")
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
@@ -105,8 +108,8 @@ func (c *ArticleController) PostNiceHandler(w http.ResponseWriter, req *http.Req
 	// jsonデータを構造体にデコード
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
-		return
 	}
 
 	article, err := c.service.PostNiceService(reqArticle)

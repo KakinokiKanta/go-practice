@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/KakinokiKanta/go-intermediate/apperrors"
 	"github.com/KakinokiKanta/go-intermediate/controllers/services"
 	"github.com/KakinokiKanta/go-intermediate/models"
 )
@@ -26,6 +27,7 @@ func (c *CommentController) PostCommentHandler(w http.ResponseWriter, req *http.
 	// jsonデータを構造体にデコード
 	var reqComment models.Comment
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 		return
 	}
