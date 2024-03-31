@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/KakinokiKanta/go-intermediate/api/middlewares"
 	"github.com/KakinokiKanta/go-intermediate/controllers"
 	"github.com/KakinokiKanta/go-intermediate/services"
 	"github.com/gorilla/mux"
@@ -27,6 +28,8 @@ func NewRouter(db *sql.DB) *mux.Router {
 
 	// 記事にコメントを投稿するためのエンドポイント
 	r.HandleFunc("/comment", cCon.PostCommentHandler).Methods(http.MethodPost)
+
+	r.Use(middlewares.LoggingMiddleware)
 
 	return r
 }
