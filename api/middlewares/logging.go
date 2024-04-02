@@ -18,7 +18,11 @@ func NewResLoggingWriter(w http.ResponseWriter) *resLoggingWriter {
 
 // WriteHeaderメソッド
 func (rsw *resLoggingWriter) WriteHeader(code int) {
+	// resLoggingWriter構造体のcodeフィールドに、使うレスポンスコードを保存する
 	rsw.code = code
+
+	// HTTPレスポンスに使うレスポンスコードを指定
+	// 本来のWriteHeaderメソッドの機能を呼び出し
 	rsw.ResponseWriter.WriteHeader(code)
 }
 
