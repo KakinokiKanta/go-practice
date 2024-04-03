@@ -56,5 +56,4 @@ func loadEnv() {
 	dbPassword = os.Getenv("USERPASS")
 	dbDatabase = os.Getenv("DATABASE")
 	dbConn = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
-	fmt.Println(dbConn)
 }
