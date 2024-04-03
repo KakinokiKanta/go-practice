@@ -49,11 +49,12 @@ func connectDB() (*sql.DB, error) {
 
 func loadEnv() {
 	err := godotenv.Load(".env")
-	dbUser = os.Getenv("DB_USER")
-	dbPassword = os.Getenv("DB_PASSWORD")
-	dbDatabase = os.Getenv("DB_NAME")
-	dbConn = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
 	if err != nil {
 		fmt.Println("fail to load .env file")
 	}
+	dbUser = os.Getenv("DBUSER")
+	dbPassword = os.Getenv("USERPASS")
+	dbDatabase = os.Getenv("DATABASE")
+	dbConn = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+	fmt.Println(dbConn)
 }
