@@ -41,15 +41,47 @@ func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) 
 	var commentList []models.Comment
 	var articleGetErr, commentGetErr error
 
+	// 記事情報取得用のチャネルの型を定義
+	type articleResult struct {
+		article models.Article
+		err error
+	}
+
+	// 記事情報取得用のチャネルを定義
+	articleChan := make(chan articleResult)
+	defer close(articleChan)
+
 	// repositories層の関数SelectArticleDetailで記事の詳細を取得
-	go func(db *sql.DB, articleID int) {
-		article, articleGetErr = repositories.SelectArticleDetail(db, articleID)
-	}(s.db, articleID)
+	go func(ch chan<- articleResult, db *sql.DB, articleID int) {
+		article, err := repositories.SelectArticleDetail(db, articleID)
+		ch <- articleResult{article: article, err: err}
+	}(articleChan, s.db, articleID)
+
+	// コメントリスト取得用のチャネルの型を定義
+	type commentResult struct {
+		commentList *[]models.Comment
+		err error
+	}
+
+	// コメントリスト取得用のチャネルを定義
+	commentChan := make(chan commentResult)
+	defer close(commentChan)
 
 	// repositories層の関数SelectCommentListでコメント一覧を取得
-	go func(db *sql.DB, articleID int) {
-		commentList, commentGetErr = repositories.SelectedCommentList(db, articleID)
-	}(s.db, articleID)
+	go func(ch chan<- commentResult, db *sql.DB, articleID int) {
+		commentList, err := repositories.SelectedCommentList(db, articleID)
+		ch <- commentResult{commentList: &commentList, err: err}
+	}(commentChan, s.db, articleID)
+
+	// 2つのチャネルから受信
+	for i := 0; i < 2; i++ {
+		select {
+		case ar := <-articleChan:
+			article, articleGetErr = ar.article, ar.err
+		case cr := <-commentChan:
+			commentList, commentGetErr = *cr.commentList, cr.err
+		}
+	}
 
 	if articleGetErr != nil {
 		if errors.Is(articleGetErr, sql.ErrNoRows) {
