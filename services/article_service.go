@@ -3,6 +3,7 @@ package services
 import (
 	"database/sql"
 	"errors"
+	"sync"
 
 	"github.com/KakinokiKanta/go-intermediate/apperrors"
 	"github.com/KakinokiKanta/go-intermediate/models"
@@ -41,15 +42,29 @@ func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) 
 	var commentList []models.Comment
 	var articleGetErr, commentGetErr error
 
+	var amu sync.Mutex
+	var cmu sync.Mutex
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
 	// repositories層の関数SelectArticleDetailで記事の詳細を取得
-	go func() {
-		article, articleGetErr = repositories.SelectArticleDetail(s.db, articleID)
-	}()
+	go func(db *sql.DB, articleID int) {
+		defer wg.Done()
+		amu.Lock()
+		article, articleGetErr = repositories.SelectArticleDetail(db, articleID)
+		amu.Unlock()
+	}(s.db, articleID)
 
 	// repositories層の関数SelectCommentListでコメント一覧を取得
-	go func() {
-		commentList, commentGetErr = repositories.SelectedCommentList(s.db, articleID)
-	}()
+	go func(db *sql.DB, articleID int) {
+		defer wg.Done()
+		cmu.Lock()
+		commentList, commentGetErr = repositories.SelectedCommentList(db, articleID)
+		cmu.Unlock()
+	}(s.db, articleID)
+
+	wg.Wait()
 
 	if articleGetErr != nil {
 		if errors.Is(articleGetErr, sql.ErrNoRows) {
