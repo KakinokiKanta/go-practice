@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/KakinokiKanta/go-intermediate/models"
 )
@@ -19,7 +18,6 @@ func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
 	// Execメソッドでクエリの実行
 	result, err := db.Exec(sqlStr, comment.ArticleID, comment.Message)
 	if err != nil {
-		fmt.Println(err)
 		return models.Comment{}, err
 	}
 
@@ -47,7 +45,6 @@ func SelectedCommentList(db *sql.DB, articleID int) ([]models.Comment, error) {
 	// sql.DB型のメソッドQueryを用いてクエリを実行し、rowsに結果を格納
 	rows, err := db.Query(sqlStr, articleID)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()

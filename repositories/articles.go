@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/KakinokiKanta/go-intermediate/models"
 )
@@ -20,7 +19,6 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	// sql.DB型のメソッドExecを用いて、クエリを実行
 	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
 	if err != nil {
-		fmt.Println(err)
 		return models.Article{}, err
 	}
 
@@ -49,7 +47,6 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	// sql.DB型のQueryメソッドを用いてクエリを実行し、得られたデータをrowsに格納
 	rows, err := db.Query(sqlStr, articleNumPerPage, (page-1)*articleNumPerPage)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -81,7 +78,6 @@ func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 	// QueryRowメソッドでクエリを実行し、結果を変数rowに格納
 	row := db.QueryRow(sqlStr, articleID)
 	if err := row.Err(); err != nil {
-		fmt.Println(err)
 		return models.Article{}, err
 	}
 
@@ -92,7 +88,6 @@ func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 
 	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdAt)
 	if err != nil {
-		fmt.Println(err)
 		return models.Article{}, err
 	}
 
@@ -120,14 +115,12 @@ func UpdageNiceNum(db *sql.DB, articleID int) (int, error) {
 	// トランザクション処理の開始
 	tx, err := db.Begin()
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
 	// 1レコードだけ抽出するQueryRowメソッドで、指定した記事IDのいいね数を取得
 	row := tx.QueryRow(sqlGetNice, articleID)
 	if err := row.Err(); err != nil {
-		fmt.Println(err)
 		tx.Rollback()
 		return 0, err
 	}
@@ -136,7 +129,6 @@ func UpdageNiceNum(db *sql.DB, articleID int) (int, error) {
 	var nicenum int
 	err = row.Scan(&nicenum)
 	if err != nil {
-		fmt.Println(err)
 		tx.Rollback()
 		return 0, err
 	}
@@ -144,14 +136,12 @@ func UpdageNiceNum(db *sql.DB, articleID int) (int, error) {
 	// Execメソッドでupdateを実行
 	_, err = tx.Exec(sqlUpdateNice, nicenum+1, articleID)
 	if err != nil {
-		fmt.Println(err)
 		tx.Rollback()
 		return 0, err
 	}
 
 	// Commitして、これまでの一連の処理を確定
 	if err := tx.Commit(); err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
