@@ -34,10 +34,10 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		// リクエスト情報をロギング
 		log.Printf("[%d]%s %s\n",traceID, req.RequestURI, req.Method)
 
-		// 自作ResponseWriterを作成
+		ctx := SetTraceID(req.Context(), traceID)
+		req = req.WithContext(ctx)
 		rlw := NewResLoggingWriter(w)
 
-		// ハンドラには自作ResponseWriterを渡す
 		next.ServeHTTP(rlw, req)
 
 		// 自作ResponseWriterからロギングしたいデータを出す
