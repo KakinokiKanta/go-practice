@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/KakinokiKanta/go-intermediate/api/middlewares"
+	"github.com/KakinokiKanta/go-intermediate/common"
 )
 
 // エラーが発生したときのレスポンス処理をここで一括で行う
@@ -20,7 +20,7 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		}
 	}
 
-	traceID := middlewares.GetTraceID(req.Context())
+	traceID := common.GetTraceID(req.Context())
 	log.Printf("[%d]error: %s\n", traceID, appErr)
 
 	var statusCode int

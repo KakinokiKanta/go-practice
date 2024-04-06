@@ -7,32 +7,13 @@ import (
 	"strings"
 
 	"github.com/KakinokiKanta/go-intermediate/apperrors"
+	"github.com/KakinokiKanta/go-intermediate/common"
 	"google.golang.org/api/idtoken"
 )
-
-type userNameKey struct{}
 
 const (
 	googleClientID = "301425239768-0o5svokv0dv7e6da5m94v9446d6hakqh.apps.googleusercontent.com"
 )
-
-func GetUserName(ctx context.Context) string {
-	id := ctx.Value(userNameKey{})
-
-	if usernameStr, ok := id.(string); ok {
-		return usernameStr
-	}
-	return ""
-}
-
-func SetUserName(req *http.Request, name string) *http.Request {
-	ctx := req.Context()
-
-	ctx = context.WithValue(ctx, userNameKey{}, name)
-	req = req.WithContext(ctx)
-
-	return req
-}
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -78,7 +59,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// context にユーザ名をセット
-		req = SetUserName(req, name.(string))
+		req = common.SetUserName(req, name.(string))
 
 		// 本物のハンドラへ
 		next.ServeHTTP(w, req)
